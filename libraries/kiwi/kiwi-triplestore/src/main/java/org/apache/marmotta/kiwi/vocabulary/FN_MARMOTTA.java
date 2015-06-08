@@ -31,7 +31,6 @@ import org.openrdf.model.vocabulary.FN;
 public class FN_MARMOTTA {
 
     public static final String NAMESPACE = "http://marmotta.apache.org/vocabulary/sparql-functions#";
-
     /**
      * Recommended prefix for the XPath Functions namespace: "fn"
      */
@@ -48,7 +47,8 @@ public class FN_MARMOTTA {
     public static final URI SEARCH_FULLTEXT;
 
     public static final URI QUERY_FULLTEXT;
-
+    
+ 
     // URIs for SPARQL built-in functions, used internally by marmotta
     public static final URI RAND;
     public static final URI UUID;
@@ -79,7 +79,7 @@ public class FN_MARMOTTA {
 
         SEARCH_FULLTEXT = f.createURI(NAMESPACE,"fulltext-search");
         QUERY_FULLTEXT = f.createURI(NAMESPACE,"fulltext-query");
-
+        
         RAND      = f.createURI(NAMESPACE,"rand");
         UUID      = f.createURI(NAMESPACE,"uuid");
         STRUUID   = f.createURI(NAMESPACE,"struuid");

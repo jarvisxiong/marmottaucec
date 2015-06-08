@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+org.apache.marmotta.kiwi.sparql.function.geosparql.SfIntersectsFunction
+
 org.apache.marmotta.kiwi.sparql.function.cast.NBooleanCast
 org.apache.marmotta.kiwi.sparql.function.cast.NDateTimeCast
 org.apache.marmotta.kiwi.sparql.function.cast.NDecimalCast

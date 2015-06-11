@@ -51,6 +51,8 @@ public class FN_GEOSPARQL {
 
     //BOOLEAN FUNCTIONS
     public static final URI SF_INTERSECTS;
+    public static final URI SF_WITHIN;
+    public static final URI SF_TOUCHES;
 
     //SPATIAL FUNCTION ( ejm: buffer )  
     //DISTANCE FUNCTION ( ejm: distance )
@@ -58,7 +60,9 @@ public class FN_GEOSPARQL {
         ValueFactory f = new ValueFactoryImpl();
 
         SF_INTERSECTS = f.createURI(NAMESPACE, "sfIntersects");
-
+        SF_WITHIN = f.createURI(NAMESPACE, "sfWithin");
+        SF_TOUCHES = f.createURI(NAMESPACE, "sfTouches");
+        
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";
         MULTILINESTRING = "MULTILINESTRING";

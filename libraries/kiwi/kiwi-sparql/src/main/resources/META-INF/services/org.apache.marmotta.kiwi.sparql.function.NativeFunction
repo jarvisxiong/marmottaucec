@@ -16,6 +16,8 @@
 #
 
 org.apache.marmotta.kiwi.sparql.function.geosparql.SfIntersectsFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.SfWithinFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.SfTouchesFunction
 
 org.apache.marmotta.kiwi.sparql.function.cast.NBooleanCast
 org.apache.marmotta.kiwi.sparql.function.cast.NDateTimeCast

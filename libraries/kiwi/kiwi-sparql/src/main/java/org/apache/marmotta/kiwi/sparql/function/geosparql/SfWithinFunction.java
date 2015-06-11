@@ -22,19 +22,18 @@ import org.apache.marmotta.kiwi.persistence.pgsql.PostgreSQLDialect;
 import org.apache.marmotta.kiwi.sparql.builder.ValueType;
 import org.apache.marmotta.kiwi.sparql.function.NativeFunction;
 import org.apache.marmotta.kiwi.vocabulary.FN_GEOSPARQL;
-import org.apache.marmotta.kiwi.vocabulary.FN_MARMOTTA;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * A SPARQL function for doing a intersection between two geometries. Should be implemented directly in
+ * A SPARQL function for doing a within between two geometries. Should be implemented directly in
  * the database, as the in-memory implementation is non-functional. Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- *     <li>geof:sfIntersects(?geometryA, ?geometryB) </li>
+ *     <li>geof:sfWithin(?geometryA, ?geometryB) </li>
  * </ul>
  * Its necesary enable postgis in your database with the next command "CREATE EXTENSION postgis;"
  * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
@@ -42,12 +41,12 @@ import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
  *
  * @author Xavier Zumba (xavier.sumba93@ucuenca.ec))
  */
-public class SfIntersectsFunction implements NativeFunction {
+public class SfWithinFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
-        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.SF_INTERSECTS.toString())) {
-            FunctionRegistry.getInstance().add(new SfIntersectsFunction());
+        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.SF_WITHIN.toString())) {
+            FunctionRegistry.getInstance().add(new SfWithinFunction());
         }
     }
 
@@ -58,7 +57,7 @@ public class SfIntersectsFunction implements NativeFunction {
 
     @Override
     public String getURI() {
-        return FN_GEOSPARQL.SF_INTERSECTS.toString();
+        return FN_GEOSPARQL.SF_WITHIN.toString();
     }
 
 
@@ -84,15 +83,18 @@ public class SfIntersectsFunction implements NativeFunction {
     public String getNative(KiWiDialect dialect, String... args) {
         if(dialect instanceof PostgreSQLDialect) {
             if(args.length == 2) {
-                if (args[1].contains(FN_GEOSPARQL.MULTIPOLYGON)|| args[1].contains(FN_GEOSPARQL.MULTILINESTRING) || args[1].contains(FN_GEOSPARQL.POINT))
-                {  //If users insert Direct the WKT  Geometry 
-                    return "st_Intersects(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), " + args[1] + " )";    
-                }        
-                return "st_Intersects(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), substring( " + args[1] + " from position(' ' in " +  args[1] + ") + 1 for char_length( " + args[1] + " ) ) ) ";
+         //       if (args[0].contains(FN_GEOSPARQL.POINT.toString()) && args[1].contains(FN_GEOSPARQL.MULTIPOLYGON.toString()))
+         //       { 
+                return "st_Within(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), substring( " + args[1] + " from position(' ' in " +  args[1] + ") + 1 for char_length( " + args[1] + " ) ) ) ";
+              //  }
+            //    else
+           //     if (args[0].contains(FN_GEOSPARQL.POINT.toString()) && args[1].contains(FN_GEOSPARQL.MULTILINESTRING.toString()))
+           //     {               return "st_Intersects(substring( " + args[0] + " from position('" + FN_GEOSPARQL.POINT.toString() + "' in " + args[0] + "  ) for 60 ), substring( " + args[1] + " from position('"+FN_GEOSPARQL.MULTILINESTRING.toString()+"' in " + args[1] + " ) for char_length( " + args[1] + " ) ) ) ";
+           //     }
             } 
 
         }
-        throw new UnsupportedOperationException("Intersects function not supported by dialect "+dialect);
+        throw new UnsupportedOperationException("Within function not supported by dialect "+dialect);
     }
 
     /**

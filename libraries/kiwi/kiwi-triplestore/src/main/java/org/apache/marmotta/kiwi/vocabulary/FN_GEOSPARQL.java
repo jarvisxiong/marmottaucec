@@ -53,15 +53,29 @@ public class FN_GEOSPARQL {
     public static final URI SF_INTERSECTS;
     public static final URI SF_WITHIN;
     public static final URI SF_TOUCHES;
+    public static final URI SF_CONTAINS;
+    public static final URI SF_OVERLAPS;
+    public static final URI SF_CROSSES;
+    public static final URI SF_DISJOINT;
+    public static final URI SF_EQUALS;
 
-    //SPATIAL FUNCTION ( ejm: buffer )  
-    //DISTANCE FUNCTION ( ejm: distance )
+    //Non-Topological  FUNCTION 
+    public static final URI BUFFER;
+    
     static {
         ValueFactory f = new ValueFactoryImpl();
 
         SF_INTERSECTS = f.createURI(NAMESPACE, "sfIntersects");
         SF_WITHIN = f.createURI(NAMESPACE, "sfWithin");
         SF_TOUCHES = f.createURI(NAMESPACE, "sfTouches");
+        SF_CONTAINS = f.createURI(NAMESPACE, "sfContains");
+        SF_OVERLAPS =  f.createURI(NAMESPACE, "sfOverlaps");
+        SF_CROSSES = f.createURI(NAMESPACE, "sfCrosses");
+        SF_DISJOINT = f.createURI(NAMESPACE, "sfDisjoint");
+        SF_EQUALS = f.createURI(NAMESPACE, "sfEquals");
+        
+        BUFFER = f.createURI(NAMESPACE,"buffer");
+        
         
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";

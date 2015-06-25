@@ -61,7 +61,10 @@ public class FN_GEOSPARQL {
 
     //Non-Topological  FUNCTION 
     public static final URI BUFFER;
-    
+    public static final URI CONVEX_HULL;
+    public static final URI INTERSECTION;
+ 
+
     static {
         ValueFactory f = new ValueFactoryImpl();
 
@@ -73,13 +76,13 @@ public class FN_GEOSPARQL {
         SF_CROSSES = f.createURI(NAMESPACE, "sfCrosses");
         SF_DISJOINT = f.createURI(NAMESPACE, "sfDisjoint");
         SF_EQUALS = f.createURI(NAMESPACE, "sfEquals");
-        
+       
         BUFFER = f.createURI(NAMESPACE,"buffer");
-        
+        CONVEX_HULL = f.createURI(NAMESPACE,"convexHull");
+        INTERSECTION = f.createURI(NAMESPACE,"intersection");
         
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";
         MULTILINESTRING = "MULTILINESTRING";
-
     }
 }

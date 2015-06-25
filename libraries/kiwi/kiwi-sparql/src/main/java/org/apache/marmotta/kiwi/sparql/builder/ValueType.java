@@ -35,7 +35,7 @@ public enum ValueType {
     URI,    // constructed URI
     BNODE,  // constructed BNODE
     NONE,    // not projected
-    GEOMETRY;
+    GEOMETRY; //Geometry Value
 
     public final boolean isNumeric() {
         return this == DOUBLE || this == DECIMAL || this == INT;

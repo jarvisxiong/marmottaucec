@@ -85,7 +85,7 @@ public class SfTouchesFunction implements NativeFunction {
             if(args.length == 2) {
          //       if (args[0].contains(FN_GEOSPARQL.POINT.toString()) && args[1].contains(FN_GEOSPARQL.MULTIPOLYGON.toString()))
          //       { 
-                return "st_Touches(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), substring( " + args[1] + " from position(' ' in " +  args[1] + ") + 1 for char_length( " + args[1] + " ) ) ) ";
+                return "st_Touches(" + args[0] + " , " + args[1] + " )";
               //  }
             //    else
            //     if (args[0].contains(FN_GEOSPARQL.POINT.toString()) && args[1].contains(FN_GEOSPARQL.MULTILINESTRING.toString()))
@@ -116,7 +116,7 @@ public class SfTouchesFunction implements NativeFunction {
      */
     @Override
     public ValueType getArgumentType(int arg) {
-        return ValueType.STRING;
+        return ValueType.GEOMETRY;
     }
 
     /**

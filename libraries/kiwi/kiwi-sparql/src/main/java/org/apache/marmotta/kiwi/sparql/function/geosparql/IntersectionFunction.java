@@ -39,7 +39,7 @@ import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
  * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
  * consult your database documentation on how to do this.
  *
- * @author Xavier Zumba (xavier.sumba93@ucuenca.ec))
+ * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
 public class IntersectionFunction implements NativeFunction {
 
@@ -86,9 +86,9 @@ public class IntersectionFunction implements NativeFunction {
                   if(args.length == 2) {
                 if (args[1].contains(FN_GEOSPARQL.MULTIPOLYGON)|| args[1].contains(FN_GEOSPARQL.MULTILINESTRING) || args[1].contains(FN_GEOSPARQL.POINT))
                 {  //If users insert Direct the WKT  Geometry 
-                    return "ST_AsText(st_Intersection(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), " + args[1] + " ) )";    
+                    return "ST_AsText(st_Intersection(" + args[0] + " , " + args[1] + " ) )";    
                 }        
-                return "ST_AsText(st_Intersection(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), substring( " + args[1] + " from position(' ' in " +  args[1] + ") + 1 for char_length( " + args[1] + " ) ) ) )";
+                return "ST_AsText(st_Intersection(" + args[0] + " , " + args[1] + " ) )";
             } 
 
             
@@ -117,7 +117,7 @@ public class IntersectionFunction implements NativeFunction {
      */
     @Override
     public ValueType getArgumentType(int arg) {
-        return ValueType.STRING;
+        return ValueType.GEOMETRY;
     }
 
     /**

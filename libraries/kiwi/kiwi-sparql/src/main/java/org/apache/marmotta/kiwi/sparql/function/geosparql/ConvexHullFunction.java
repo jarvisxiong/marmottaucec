@@ -39,14 +39,14 @@ import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
  * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
  * consult your database documentation on how to do this.
  *
- * @author Xavier Zumba (xavier.sumba93@ucuenca.ec))
+ * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
-public class SfConvexHullFunction implements NativeFunction {
+public class ConvexHullFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
         if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.CONVEX_HULL.toString())) {
-            FunctionRegistry.getInstance().add(new SfConvexHullFunction());
+            FunctionRegistry.getInstance().add(new ConvexHullFunction());
         }
     }
 
@@ -87,7 +87,7 @@ public class SfConvexHullFunction implements NativeFunction {
                 {  //If users insert Direct the WKT  Geometry 
                     return "ST_AsText(st_convexHull( " + args[0] + " ))";    
                 }        
-                return "ST_AsText(st_convexHull(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " )))) ";
+                return "ST_AsText(st_convexHull(" + args[0] +"))";
             } 
 
         }
@@ -113,7 +113,7 @@ public class SfConvexHullFunction implements NativeFunction {
      */
     @Override
     public ValueType getArgumentType(int arg) {
-        return ValueType.STRING;
+        return ValueType.GEOMETRY;
     }
 
     /**

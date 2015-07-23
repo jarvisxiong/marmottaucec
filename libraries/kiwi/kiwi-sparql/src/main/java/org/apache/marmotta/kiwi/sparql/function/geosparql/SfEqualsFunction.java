@@ -85,9 +85,9 @@ public class SfEqualsFunction implements NativeFunction {
             if(args.length == 2) {
                 if (args[1].contains(FN_GEOSPARQL.MULTIPOLYGON)|| args[1].contains(FN_GEOSPARQL.MULTILINESTRING) || args[1].contains(FN_GEOSPARQL.POINT))
                 {  //If users insert Direct the WKT  Geometry 
-                    return "st_Equals(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), " + args[1] + " )";    
+                    return "st_Equals(" + args[0] + " , " + args[1] + " )";    
                 }        
-                return "st_Equals(substring( " + args[0] + " from position(' ' in " +  args[0] + ") + 1 for char_length( " + args[0] + " ) ), substring( " + args[1] + " from position(' ' in " +  args[1] + ") + 1 for char_length( " + args[1] + " ) ) ) ";
+                return "st_Equals(" + args[0] + " , " + args[1] + " )";    
             } 
 
         }
@@ -113,7 +113,7 @@ public class SfEqualsFunction implements NativeFunction {
      */
     @Override
     public ValueType getArgumentType(int arg) {
-        return ValueType.STRING;
+        return ValueType.GEOMETRY;
     }
 
     /**

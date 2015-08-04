@@ -39,7 +39,7 @@ import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
  * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
  * consult your database documentation on how to do this.
  *
- * @author Xavier Zumba (xavier.sumba93@ucuenca.ec))
+ * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
 public class SfCrossesFunction implements NativeFunction {
 

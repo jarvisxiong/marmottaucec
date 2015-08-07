@@ -63,6 +63,21 @@ public class FN_GEOSPARQL {
     public static final URI BUFFER;
     public static final URI CONVEX_HULL;
     public static final URI INTERSECTION;
+    public static final URI DISTANCE;
+    public static final URI UNION;
+    
+    
+    
+    //measure units
+    public static final String unitsNAMESPACE = "http://www.opengis.net/def/uom/OGC/1.0/";
+    public static final String unitsPREFIX = "units";
+
+    public static final Namespace unitsNS = new NamespaceImpl(unitsPREFIX, unitsNAMESPACE);
+
+    
+    public static final URI meter;
+    
+    
  
 
     static {
@@ -80,6 +95,11 @@ public class FN_GEOSPARQL {
         BUFFER = f.createURI(NAMESPACE,"buffer");
         CONVEX_HULL = f.createURI(NAMESPACE,"convexHull");
         INTERSECTION = f.createURI(NAMESPACE,"intersection");
+        DISTANCE = f.createURI(NAMESPACE,"distance");
+        UNION = f.createURI(NAMESPACE,"union");
+        
+        meter = f.createURI(unitsNAMESPACE,"meter");
+        
         
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";

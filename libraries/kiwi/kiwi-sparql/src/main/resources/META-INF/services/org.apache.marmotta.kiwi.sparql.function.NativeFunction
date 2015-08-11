@@ -28,6 +28,8 @@ org.apache.marmotta.kiwi.sparql.function.geosparql.BufferFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.ConvexHullFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.IntersectionFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.DistanceFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.UnionFunction
+
 
 org.apache.marmotta.kiwi.sparql.function.cast.NBooleanCast
 org.apache.marmotta.kiwi.sparql.function.cast.NDateTimeCast

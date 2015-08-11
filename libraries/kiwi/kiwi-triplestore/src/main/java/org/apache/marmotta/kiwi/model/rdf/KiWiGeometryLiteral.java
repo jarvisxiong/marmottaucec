@@ -51,14 +51,14 @@ public class KiWiGeometryLiteral extends KiWiLiteral {
         this.content = content;
     }
 
-
-    public KiWiGeometryLiteral(String content, Locale language, KiWiUriResource type) {
-        super(language, type);
+    
+    public KiWiGeometryLiteral(String content,  KiWiUriResource type) {
+        super(type);
         this.content = content;
     }
 
-    public KiWiGeometryLiteral(String content, Locale language, KiWiUriResource type, Date created) {
-        super(language, type, created);
+    public KiWiGeometryLiteral(String content,  KiWiUriResource type, Date created) {
+        super(null, type, created);
         this.content = content;
     }
 

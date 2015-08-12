@@ -21,66 +21,31 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- * Namespace GEO
+ * Namespace GEO_old
+ * MARMOTTA 584 Proyect
+ * Implement to support GeoSPARQL 
  */
 public class GEO {
 
-    public static final String NAMESPACE = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+    public static final String NAMESPACE = "http://www.opengis.net/ont/geosparql#";
 
     public static final String PREFIX = "geo";
 
     /**
-     * A point, typically described using a coordinate system relative to Earth, such as WGS84.
+     * hasGeometry, property to reference the geometry resource of a resource
      */
-    public static final URI Point;
+    public static final URI hasGeometry;
 
     /**
-     * Anything with spatial extent, i.e. size, shape, or position.
-     e.g. people, places, bowling balls, as well as abstract areas like cubes.
+     * asWKT, property to reference the geometry literal of a geometry resource
      */
-    public static final URI SpatialThing;
+    public static final URI asWKT;
 
-    /**
-     * The WGS84 altitude of a SpatialThing (decimal meters
-     above the local reference ellipsoid).
-     */
-    public static final URI alt;
-
-    /**
-     * The WGS84 latitude of a SpatialThing (decimal degrees).
-     */
-    public static final URI lat;
-
-    /**
-     * A comma-separated representation of a latitude, longitude coordinate.
-     */
-    public static final URI lat_long;
-
-    /**
-     * The relation between something and the point,
-     or other geometrical thing in space, where it is.  For example, the realtionship between
-     a radio tower and a Point with a given lat and long.
-     Or a relationship between a park and its outline as a closed arc of points, or a road and
-     its location as a arc (a sequence of points).
-     Clearly in practice there will be limit to the accuracy of any such statement, but one would expect
-     an accuracy appropriate for the size of the object and uses such as mapping .
-     */
-    public static final URI location;
-
-    /**
-     * The WGS84 longitude of a SpatialThing (decimal degrees).
-     */
-    public static final URI long_;
-
-
+    
     static{
         ValueFactory factory = ValueFactoryImpl.getInstance();
-        Point = factory.createURI(GEO.NAMESPACE, "Point");
-        SpatialThing = factory.createURI(GEO.NAMESPACE, "SpatialThing");
-        alt = factory.createURI(GEO.NAMESPACE, "alt");
-        lat = factory.createURI(GEO.NAMESPACE, "lat");
-        lat_long = factory.createURI(GEO.NAMESPACE, "lat_long");
-        location = factory.createURI(GEO.NAMESPACE, "location");
-        long_ = factory.createURI(GEO.NAMESPACE, "long");
+        hasGeometry = factory.createURI(GEO.NAMESPACE, "hasGeometry");
+        asWKT = factory.createURI(GEO.NAMESPACE, "asWKT");
+        
     }
 }

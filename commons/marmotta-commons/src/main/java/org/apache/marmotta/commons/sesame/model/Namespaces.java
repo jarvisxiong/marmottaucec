@@ -62,7 +62,12 @@ public class Namespaces {
     public static final String NS_LASTFM                   = "http://foaf.qdos.com/lastfm/schema/";
     public static final String NS_BIO                      = "http://purl.org/vocab/bio/0.1/";
     public static final String NS_CONT                     = "http://www.w3.org/2000/10/swap/pim/contact#";
+    /* modify in MARMOTTA 584 deprecated NSGEO    
     public static final String NS_GEO                      = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+    new NS_GEO and NS_GEOF for GeoSparql Standar Support
+    */
+    public static final String NS_GEO                      = "http://www.opengis.net/ont/geosparql#";
+    public static final String NS_GEOF                     = "http://www.opengis.net/def/function/geosparql/";
     public static final String NS_GEONAMES                 = "http://www.geonames.org/ontology#";
     public static final String NS_SIOC                     = "http://rdfs.org/sioc/ns#";
     public static final String NS_SIOC_TYPES               = "http://rdfs.org/sioc/types#";

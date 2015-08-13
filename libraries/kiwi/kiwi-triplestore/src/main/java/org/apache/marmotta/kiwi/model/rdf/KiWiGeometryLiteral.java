@@ -23,13 +23,14 @@ import java.util.Locale;
 /**
  * A RDF geometry literal (of type geo:wktLiteral), possibly with language information.
  * <p/>
- * User: Xavier 
+ * @author Xavier Sumba (xavier.sumba93@ucuenca.ec)
  */
 public class KiWiGeometryLiteral extends KiWiLiteral {
 
 	private static final long serialVersionUID = 8761608427535540348L;
 	
 	protected String content;
+         protected int SRID_URI;
 
 
     public KiWiGeometryLiteral() {
@@ -51,13 +52,19 @@ public class KiWiGeometryLiteral extends KiWiLiteral {
         this.content = content;
     }
 
-    
-    public KiWiGeometryLiteral(String content,  KiWiUriResource type) {
+
+    public KiWiGeometryLiteral(String content, KiWiUriResource type) {
         super(type);
         this.content = content;
     }
 
-    public KiWiGeometryLiteral(String content,  KiWiUriResource type, Date created) {
+     public KiWiGeometryLiteral(String content, KiWiUriResource type, int srid) {
+        super(type);
+        this.content = content;
+        this.SRID_URI = srid;
+    }
+     
+    public KiWiGeometryLiteral(String content, KiWiUriResource type, Date created) {
         super(null, type, created);
         this.content = content;
     }
@@ -69,6 +76,24 @@ public class KiWiGeometryLiteral extends KiWiLiteral {
      */
     public String getContent() {
         return content;
+    }
+
+
+    /**
+     * Set the content of the literal to the content provided as parameter.
+     * @param content
+     */
+    public void setSRID(int srid) {
+        this.SRID_URI = srid;
+    }
+    
+    
+    /**
+     * Return the content of the literal, using the parametrized Java type
+     * @return
+     */
+    public int getSRID() {
+        return SRID_URI;
     }
 
 

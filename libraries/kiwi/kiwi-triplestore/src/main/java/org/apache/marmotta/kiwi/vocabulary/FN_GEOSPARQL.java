@@ -48,11 +48,9 @@ public class FN_GEOSPARQL {
      */
     public static final Namespace NS = new NamespaceImpl(PREFIX, NAMESPACE);
 
-    //BOOLEAN FUNCTIONS
-    
     /*
-    * SIMPLE FEATURE FUNCTIONS 
-    */
+     * SIMPLE FEATURE FUNCTIONS 
+     */
     public static final URI SF_INTERSECTS;
     public static final URI SF_WITHIN;
     public static final URI SF_TOUCHES;
@@ -61,10 +59,10 @@ public class FN_GEOSPARQL {
     public static final URI SF_CROSSES;
     public static final URI SF_DISJOINT;
     public static final URI SF_EQUALS;
-    
+
     /*
-    * RCC8 FUNCTIONS 
-    */
+     * RCC8 FUNCTIONS 
+     */
     public static final URI RCC8_DC;
     public static final URI RCC8_EQ;
     public static final URI RCC8_EC;
@@ -73,10 +71,10 @@ public class FN_GEOSPARQL {
     public static final URI RCC8_NTPPI;
     public static final URI RCC8_TPP;
     public static final URI RCC8_NTPP;
-    
+
     /*
-    * EGENHOFER  FUNCTIONS 
-    */
+     * EGENHOFER  FUNCTIONS 
+     */
     public static final URI EH_EQUALS;
     public static final URI EH_DISJOINT;
     public static final URI EH_MEET;
@@ -85,9 +83,10 @@ public class FN_GEOSPARQL {
     public static final URI EH_COVEREDBY;
     public static final URI EH_INSIDE;
     public static final URI EH_CONTAINS;
-    
-    
-    //Non-Topological  FUNCTION 
+
+    /*
+     * Non-Topological  FUNCTION
+     */
     public static final URI BUFFER;
     public static final URI CONVEX_HULL;
     public static final URI INTERSECTION;
@@ -104,12 +103,13 @@ public class FN_GEOSPARQL {
     public static final String unitsNAMESPACE = "http://www.opengis.net/def/uom/OGC/1.0/";
     public static final String unitsPREFIX = "units";
     public static final URI meter;
+    public static final URI metre;
 
     // Default CRS
     public static final String sridNamespace = "http://www.opengis.net/def/crs/";
     public static final URI defaultSRID;
     public static final int defaultEPSG;
-    
+
     static {
         ValueFactory f = new ValueFactoryImpl();
 
@@ -121,7 +121,7 @@ public class FN_GEOSPARQL {
         SF_CROSSES = f.createURI(NAMESPACE, "sfCrosses");
         SF_DISJOINT = f.createURI(NAMESPACE, "sfDisjoint");
         SF_EQUALS = f.createURI(NAMESPACE, "sfEquals");
-    
+
         RCC8_DC = f.createURI(NAMESPACE, "rcc8dc");
         RCC8_EQ = f.createURI(NAMESPACE, "rcc8eq");
         RCC8_EC = f.createURI(NAMESPACE, "rcc8ec");
@@ -130,7 +130,7 @@ public class FN_GEOSPARQL {
         RCC8_NTPPI = f.createURI(NAMESPACE, "rcc8ntppi");
         RCC8_TPP = f.createURI(NAMESPACE, "rcc8tpp");
         RCC8_NTPP = f.createURI(NAMESPACE, "rcc8ntpp");
-    
+
         EH_EQUALS = f.createURI(NAMESPACE, "ehEquals");
         EH_DISJOINT = f.createURI(NAMESPACE, "ehDisjoint");
         EH_MEET = f.createURI(NAMESPACE, "ehMeet");
@@ -139,7 +139,7 @@ public class FN_GEOSPARQL {
         EH_COVEREDBY = f.createURI(NAMESPACE, "ehCoveredBy");
         EH_INSIDE = f.createURI(NAMESPACE, "ehInside");
         EH_CONTAINS = f.createURI(NAMESPACE, "ehContains");
-        
+
         BUFFER = f.createURI(NAMESPACE, "buffer");
         CONVEX_HULL = f.createURI(NAMESPACE, "convexHull");
         INTERSECTION = f.createURI(NAMESPACE, "intersection");
@@ -149,10 +149,11 @@ public class FN_GEOSPARQL {
         SYM_DIFFERENCE = f.createURI(NAMESPACE, "symDifference");
         ENVELOPE = f.createURI(NAMESPACE, "envelope");
         BOUNDARY = f.createURI(NAMESPACE, "boundary");
-        GETSRID = f.createURI(NAMESPACE,"getSRID");
+        GETSRID = f.createURI(NAMESPACE, "getSRID");
         RELATE = f.createURI(NAMESPACE, "relate");
 
         meter = f.createURI(unitsNAMESPACE, "meter");
+        metre = f.createURI(unitsNAMESPACE, "metre");
 
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";

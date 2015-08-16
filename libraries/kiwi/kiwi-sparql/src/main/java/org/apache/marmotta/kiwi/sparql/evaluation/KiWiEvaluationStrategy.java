@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.marmotta.kiwi.sparql.evaluation;
 
 import info.aduna.iteration.*;
@@ -49,25 +48,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
+import org.apache.marmotta.kiwi.model.rdf.KiWiUriResource;
 
 /**
- * An implementation of the SPARQL query evaluation strategy with specific extensions and optimizations. The KiWi
- * evaluation strategy is able to apply optimizations to certain frequently found query patterns by directly translating
- * them into SQL queries. Currently, the following constructs are supported:
+ * An implementation of the SPARQL query evaluation strategy with specific
+ * extensions and optimizations. The KiWi evaluation strategy is able to apply
+ * optimizations to certain frequently found query patterns by directly
+ * translating them into SQL queries. Currently, the following constructs are
+ * supported:
  * <ul>
- *     <li>JOINs of statement patterns are translated into SQL joins (no OPTIONAL and no path expressions supporterd)</li>
- *     <li>FILTERs are translated to SQL where conditions, in case the FILTER conditions are supported (no aggregation constructs are supported)</li>
+ * <li>JOINs of statement patterns are translated into SQL joins (no OPTIONAL
+ * and no path expressions supporterd)</li>
+ * <li>FILTERs are translated to SQL where conditions, in case the FILTER
+ * conditions are supported (no aggregation constructs are supported)</li>
  * </ul>
- * In case a query is not completely supported by the optimizer, the optimizer might still improve performance by
- * evaluating the optimizable components of the query and then letting the in-memory implementation take over
- * (e.g. for aggregation constructs, distinct, path expressions, optional).
+ * In case a query is not completely supported by the optimizer, the optimizer
+ * might still improve performance by evaluating the optimizable components of
+ * the query and then letting the in-memory implementation take over (e.g. for
+ * aggregation constructs, distinct, path expressions, optional).
  *
  * @author Sebastian Schaffert (sschaffert@apache.org)
  */
-public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
+public class KiWiEvaluationStrategy extends EvaluationStrategyImpl {
 
     private static Logger log = LoggerFactory.getLogger(KiWiEvaluationStrategy.class);
-
 
     /**
      * The database connection offering specific SPARQL-SQL optimizations.
@@ -75,7 +79,6 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
     private KiWiConnection connection;
     private KiWiValueFactory valueFactory;
     private ExecutorService executorService;
-
 
     private Set<String> projectedVars = new HashSet<>();
 
@@ -100,7 +103,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Projection projection, BindingSet bindings) throws QueryEvaluationException {
         // count projected variables
-        if(isSupported(projection.getArg())) {
+        if (isSupported(projection.getArg())) {
             for (ProjectionElem elem : projection.getProjectionElemList().getElements()) {
                 projectedVars.add(elem.getSourceName());
             }
@@ -109,10 +112,9 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
         return super.evaluate(projection, bindings);
     }
 
-
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Union union, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(union)) {
+        if (isSupported(union)) {
             return evaluateNative(union, bindings);
         } else {
             return super.evaluate(union, bindings);
@@ -121,37 +123,34 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Extension order, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(order)) {
+        if (isSupported(order)) {
             return evaluateNative(order, bindings);
         } else {
             return super.evaluate(order, bindings);
         }
     }
-
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Order order, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(order)) {
+        if (isSupported(order)) {
             return evaluateNative(order, bindings);
         } else {
             return super.evaluate(order, bindings);
         }
     }
 
-
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(LeftJoin join, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(join)) {
+        if (isSupported(join)) {
             return evaluateNative(join, bindings);
         } else {
             return super.evaluate(join, bindings);
         }
     }
 
-
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Join join, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(join)) {
+        if (isSupported(join)) {
             return evaluateNative(join, bindings);
         } else {
             return super.evaluate(join, bindings);
@@ -160,7 +159,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Filter join, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(join)) {
+        if (isSupported(join)) {
             return evaluateNative(join, bindings);
         } else {
             return super.evaluate(join, bindings);
@@ -169,7 +168,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Slice slice, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(slice)) {
+        if (isSupported(slice)) {
             return evaluateNative(slice, bindings);
         } else {
             return super.evaluate(slice, bindings);
@@ -178,7 +177,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Reduced reduced, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(reduced)) {
+        if (isSupported(reduced)) {
             return evaluateNative(reduced, bindings);
         } else {
             return super.evaluate(reduced, bindings);
@@ -187,7 +186,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
     @Override
     public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(Distinct distinct, BindingSet bindings) throws QueryEvaluationException {
-        if(isSupported(distinct)) {
+        if (isSupported(distinct)) {
             return evaluateNative(distinct, bindings);
         } else {
             return super.evaluate(distinct, bindings);
@@ -195,8 +194,9 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
     }
 
     /**
-     * Evaluate a statement pattern join or filter on the database by translating it into an appropriate SQL statement.
-     * Copied and adapted from KiWiReasoningConnection.query()
+     * Evaluate a statement pattern join or filter on the database by
+     * translating it into an appropriate SQL statement. Copied and adapted from
+     * KiWiReasoningConnection.query()
      *
      * @param join
      * @return
@@ -212,22 +212,22 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                 queryStatement.setFetchSize(connection.getConfiguration().getCursorSize());
             }
 
-            Future<ResultSet> queryFuture =
-                    executorService.submit(new Callable<ResultSet>() {
-                                               @Override
-                                               public ResultSet call() throws Exception {
-                                                   try {
-                                                       return queryStatement.executeQuery();
-                                                   } catch (SQLException ex) {
-                                                       if (Thread.interrupted()) {
-                                                           log.info("SQL query execution cancelled; not returning result (Thread={})", Thread.currentThread());
-                                                           throw new InterruptedException("SPARQL query execution cancelled");
-                                                       } else {
-                                                           throw ex;
-                                                       }
-                                                   }
-                                               }
-                                           }
+            Future<ResultSet> queryFuture
+                    = executorService.submit(new Callable<ResultSet>() {
+                        @Override
+                        public ResultSet call() throws Exception {
+                            try {
+                                return queryStatement.executeQuery();
+                            } catch (SQLException ex) {
+                                if (Thread.interrupted()) {
+                                    log.info("SQL query execution cancelled; not returning result (Thread={})", Thread.currentThread());
+                                    throw new InterruptedException("SPARQL query execution cancelled");
+                                } else {
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }
                     );
 
             try {
@@ -241,9 +241,9 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                         List<SQLVariable> vars = new ArrayList<>(builder.getVariables().values());
 
                         long[] nodeIds = new long[vars.size()];
-                        for(int i=0; i<vars.size(); i++) {
+                        for (int i = 0; i < vars.size(); i++) {
                             SQLVariable sv = vars.get(i);
-                            if(sv.getProjectionType() == ValueType.NODE && (builder.getProjectedVars().isEmpty() || builder.getProjectedVars().contains(sv.getSparqlName()))) {
+                            if (sv.getProjectionType() == ValueType.NODE && (builder.getProjectedVars().isEmpty() || builder.getProjectedVars().contains(sv.getSparqlName()))) {
                                 nodeIds[i] = row.getLong(sv.getName());
                             }
                         }
@@ -251,31 +251,34 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
 
                         for (int i = 0; i < vars.size(); i++) {
                             SQLVariable sv = vars.get(i);
-                            if(nodes[i] != null) {
+                            if (nodes[i] != null) {
                                 // resolved node
                                 resultRow.addBinding(sv.getSparqlName(), nodes[i]);
-                            } else if(sv.getProjectionType() != ValueType.NONE && (builder.getProjectedVars().isEmpty() || builder.getProjectedVars().contains(sv.getSparqlName()))) {
+                            } else if (sv.getProjectionType() != ValueType.NONE && (builder.getProjectedVars().isEmpty() || builder.getProjectedVars().contains(sv.getSparqlName()))) {
                                 // literal value
                                 String svalue;
                                 switch (sv.getProjectionType()) {
                                     case URI:
                                         svalue = row.getString(sv.getName());
-                                        if(svalue != null)
+                                        if (svalue != null) {
                                             resultRow.addBinding(sv.getSparqlName(), new URIImpl(svalue));
+                                        }
                                         break;
                                     case BNODE:
                                         svalue = row.getString(sv.getName());
-                                        if(svalue != null)
+                                        if (svalue != null) {
                                             resultRow.addBinding(sv.getSparqlName(), new BNodeImpl(svalue));
+                                        }
                                         break;
                                     case INT:
-                                        if(row.getObject(sv.getName()) != null) {
+                                        if (row.getObject(sv.getName()) != null) {
                                             svalue = Integer.toString(row.getInt(sv.getName()));
                                             URI type = XSD.Integer;
                                             try {
                                                 long typeId = row.getLong(sv.getName() + "_TYPE");
-                                                if (typeId > 0)
+                                                if (typeId > 0) {
                                                     type = (URI) connection.loadNodeById(typeId);
+                                                }
                                             } catch (SQLException ex) {
                                             }
 
@@ -283,13 +286,14 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                                         }
                                         break;
                                     case DOUBLE:
-                                        if(row.getObject(sv.getName()) != null) {
+                                        if (row.getObject(sv.getName()) != null) {
                                             svalue = Double.toString(row.getDouble(sv.getName()));
                                             URI type = XSD.Double;
                                             try {
                                                 long typeId = row.getLong(sv.getName() + "_TYPE");
-                                                if (typeId > 0)
+                                                if (typeId > 0) {
                                                     type = (URI) connection.loadNodeById(typeId);
+                                                }
                                             } catch (SQLException ex) {
                                             }
 
@@ -297,13 +301,14 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                                         }
                                         break;
                                     case DECIMAL:
-                                        if(row.getObject(sv.getName()) != null) {
+                                        if (row.getObject(sv.getName()) != null) {
                                             svalue = row.getBigDecimal(sv.getName()).toString();
                                             URI type = XSD.Decimal;
                                             try {
                                                 long typeId = row.getLong(sv.getName() + "_TYPE");
-                                                if (typeId > 0)
+                                                if (typeId > 0) {
                                                     type = (URI) connection.loadNodeById(typeId);
+                                                }
                                             } catch (SQLException ex) {
                                             }
 
@@ -311,16 +316,31 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                                         }
                                         break;
                                     case BOOL:
-                                        if(row.getObject(sv.getName()) != null) {
+                                        if (row.getObject(sv.getName()) != null) {
                                             svalue = Boolean.toString(row.getBoolean(sv.getName()));
                                             resultRow.addBinding(sv.getSparqlName(), new LiteralImpl(svalue.toLowerCase(), XSD.Boolean));
+                                        }
+                                        break;
+                                    case GEOMETRY:
+                                        if (row.getObject(sv.getName()) != null) {
+                                            svalue = row.getString(sv.getName());
+                                            URI type = new KiWiUriResource("http://www.opengis.net/ont/geosparql#wktLiteral");
+                                            try {
+                                                long typeId = row.getLong(sv.getName() + "_TYPE");
+                                                if (typeId > 0) {
+                                                    type = (URI) connection.loadNodeById(typeId);
+                                                }
+                                            } catch (SQLException ex) {
+                                            }
+
+                                            resultRow.addBinding(sv.getSparqlName(), new LiteralImpl(svalue, type));
                                         }
                                         break;
                                     case STRING:
                                     default:
                                         svalue = row.getString(sv.getName());
 
-                                        if(svalue != null) {
+                                        if (svalue != null) {
 
                                             // retrieve optional type and language information, because string functions
                                             // need to preserve this in certain cases, even when constructing new literals
@@ -333,8 +353,9 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                                             URI type = null;
                                             try {
                                                 long typeId = row.getLong(sv.getName() + "_TYPE");
-                                                if (typeId > 0)
+                                                if (typeId > 0) {
                                                     type = (URI) connection.loadNodeById(typeId);
+                                                }
                                             } catch (SQLException ex) {
                                             }
 
@@ -346,7 +367,7 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                                                     resultRow.addBinding(sv.getSparqlName(), new LiteralImpl(""));
                                                 }
                                             } else if (type != null) {
-                                                if(type.stringValue().equals(XSD.String.stringValue())) {
+                                                if (type.stringValue().equals(XSD.String.stringValue())) {
                                                     // string functions on other datatypes than string should yield no binding
                                                     if (svalue.length() > 0) {
                                                         resultRow.addBinding(sv.getSparqlName(), new LiteralImpl(svalue, type));
@@ -365,7 +386,6 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                             }
                         }
 
-
                         if (bindings != null) {
                             for (Binding binding : bindings) {
                                 resultRow.addBinding(binding);
@@ -374,7 +394,6 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
                         return resultRow;
                     }
                 });
-
 
                 return new ExceptionConvertingIteration<BindingSet, QueryEvaluationException>(new CloseableIteratorIteration<BindingSet, SQLException>(Iterations.asList(it).iterator())) {
                     @Override
@@ -409,9 +428,9 @@ public class KiWiEvaluationStrategy extends EvaluationStrategyImpl{
         }
     }
 
-
     /**
-     * Test if a tuple expression is supported nby the optimized evaluation; in this case we can apply a specific optimization.
+     * Test if a tuple expression is supported nby the optimized evaluation; in
+     * this case we can apply a specific optimization.
      *
      * @param expr
      * @return

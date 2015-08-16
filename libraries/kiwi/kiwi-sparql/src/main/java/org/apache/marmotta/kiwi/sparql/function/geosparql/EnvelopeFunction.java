@@ -27,27 +27,27 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * A SPARQL function for analyze the Inside Relate between two geometries.
- * Should be implemented directly in the database, as the in-memory
- * implementation is non-functional. Only support by postgres - POSTGIS
+ * A SPARQL function for doing an envelope of a geometry. Should be implemented
+ * directly in the database, as the in-memory implementation is non-functional.
+ * Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- * <li>geof:ehInside(?geometryA, ?geometryB) </li>
+ * <li>geof:envelope(?geometryA) </li>
  * </ul>
- * Inside Relate is calculated with "DE-9IM Intersection Pattern": defined in
- * "RCC8 Query Functions Table 6" from "DE-9IM Intersection Pattern" from OGC
- * GEOSPARQL DOCUMENT (
- * https://portal.opengeospatial.org/files/?artifact_id=47664 )
+ * Its necesary enable postgis in your database with the next command "CREATE
+ * EXTENSION postgis;" Note that for performance reasons it might be preferrable
+ * to create a geometry index for your database. Please consult your database
+ * documentation on how to do this.
  *
  * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
-public class EhInsideFunction implements NativeFunction {
+public class EnvelopeFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
-        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.EH_INSIDE.toString())) {
-            FunctionRegistry.getInstance().add(new EhInsideFunction());
+        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.ENVELOPE.toString())) {
+            FunctionRegistry.getInstance().add(new EnvelopeFunction());
         }
     }
 
@@ -58,7 +58,7 @@ public class EhInsideFunction implements NativeFunction {
 
     @Override
     public String getURI() {
-        return FN_GEOSPARQL.EH_INSIDE.toString();
+        return FN_GEOSPARQL.ENVELOPE.toString();
     }
 
     /**
@@ -84,18 +84,16 @@ public class EhInsideFunction implements NativeFunction {
     @Override
     public String getNative(KiWiDialect dialect, String... args) {
         if (dialect instanceof PostgreSQLDialect) {
-            String geom1 = args[0];
-            String geom2 = args[1];
-            String SRID_default = "4326";
-            if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
-                geom1 = String.format("ST_GeomFromText(%s,%s)", args[0], SRID_default);
+            if (args.length == 1) {
+                String geom1 = args[0];
+                String SRID_default = "4326";
+                if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
+                    geom1 = String.format("ST_GeomFromText(%s,%s)", args[0], SRID_default);
+                }
+                return String.format("ST_AsText(ST_Envelope(%s)) ", geom1);
             }
-            if (args[1].contains("POINT") || args[1].contains("MULTIPOINT") || args[1].contains("LINESTRING") || args[1].contains("MULTILINESTRING") || args[1].contains("POLYGON") || args[1].contains("MULTIPOLYGON")) {
-                geom2 = String.format("ST_GeomFromText(%s,%s)", args[1], SRID_default);
-            }
-            return String.format("ST_Relate(%s, %s, 'TFF*FFT**')", geom1, geom2);
         }
-        throw new UnsupportedOperationException("ehInside function not supported by dialect " + dialect);
+        throw new UnsupportedOperationException("Envelope function not supported by dialect " + dialect);
     }
 
     /**
@@ -106,7 +104,7 @@ public class EhInsideFunction implements NativeFunction {
      */
     @Override
     public ValueType getReturnType() {
-        return ValueType.BOOL;
+        return ValueType.GEOMETRY;
     }
 
     /**
@@ -128,7 +126,7 @@ public class EhInsideFunction implements NativeFunction {
      */
     @Override
     public int getMinArgs() {
-        return 2;
+        return 1;
     }
 
     /**
@@ -138,6 +136,6 @@ public class EhInsideFunction implements NativeFunction {
      */
     @Override
     public int getMaxArgs() {
-        return 2;
+        return 1;
     }
 }

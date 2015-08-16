@@ -34,5 +34,10 @@ org.apache.marmotta.kiwi.sparql.function.geosparql.BufferFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.ConvexHullFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.IntersectionFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.DistanceFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.DifferenceFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.SymDifferenceFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.EnvelopeFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.BoundaryFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.UnionFunction
+org.apache.marmotta.kiwi.sparql.function.geosparql.RelateFunction
 org.apache.marmotta.kiwi.sparql.function.geosparql.GetSRIDFunction

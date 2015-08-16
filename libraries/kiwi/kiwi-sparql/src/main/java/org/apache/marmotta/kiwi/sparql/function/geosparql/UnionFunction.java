@@ -16,7 +16,6 @@
  */
 package org.apache.marmotta.kiwi.sparql.function.geosparql;
 
-
 import org.apache.marmotta.kiwi.persistence.KiWiDialect;
 import org.apache.marmotta.kiwi.persistence.pgsql.PostgreSQLDialect;
 import org.apache.marmotta.kiwi.sparql.builder.ValueType;
@@ -28,17 +27,18 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * This function returns a geometric object that represents all Points in the union of geom1
- * with geom2. Calculations are in the spatial reference system of geom1.. Should be implemented directly in
- * the database, as the in-memory implementation is non-functional. Only support by postgres - POSTGIS
+ * A SPARQL function for doing a union between two geometries. Should be
+ * implemented directly in the database, as the in-memory implementation is
+ * non-functional. Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- *     <li>geof:union(?geom1, ?geom2) </li>
+ *      <li>geof:union(?geometryA, ?geometryB) </li>
  * </ul>
- * Its necesary enable postgis in your database with the next command "CREATE EXTENSION postgis;"
- * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
- * consult your database documentation on how to do this.
+ * Its necesary enable postgis in your database with the next command "CREATE
+ * EXTENSION postgis;" Note that for performance reasons it might be preferrable
+ * to create a geometry index for your database. Please consult your database
+ * documentation on how to do this.
  *
  * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
@@ -46,7 +46,7 @@ public class UnionFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
-        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.UNION.toString())) {
+        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.UNION.toString())) {
             FunctionRegistry.getInstance().add(new UnionFunction());
         }
     }
@@ -61,9 +61,9 @@ public class UnionFunction implements NativeFunction {
         return FN_GEOSPARQL.UNION.toString();
     }
 
-  
     /**
-     * Return true if this function has available native support for the given dialect
+     * Return true if this function has available native support for the given
+     * dialect
      *
      * @param dialect
      * @return
@@ -74,7 +74,8 @@ public class UnionFunction implements NativeFunction {
     }
 
     /**
-     * Return a string representing how this GeoSPARQL function is translated into SQL ( Postgis Function ) in the given dialect
+     * Return a string representing how this GeoSPARQL function is translated
+     * into SQL ( Postgis Function ) in the given dialect
      *
      * @param dialect
      * @param args
@@ -82,17 +83,26 @@ public class UnionFunction implements NativeFunction {
      */
     @Override
     public String getNative(KiWiDialect dialect, String... args) {
-        if(dialect instanceof PostgreSQLDialect) {
-            if(args.length == 2) {
-                 return "ST_AsText(ST_Union("+args[0] + " , " + args[1] + " ))";
-            } 
-
+        if (dialect instanceof PostgreSQLDialect) {
+            if (args.length == 2) {
+                String geom1 = args[0];
+                String geom2 = args[1];
+                String SRID_default = "4326";
+                if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
+                    geom1 = String.format("ST_GeomFromText(%s,%s)", args[0],SRID_default);
+                }
+                if (args[1].contains("POINT") || args[1].contains("MULTIPOINT") || args[1].contains("LINESTRING") || args[1].contains("MULTILINESTRING") || args[1].contains("POLYGON") || args[1].contains("MULTIPOLYGON")) {
+                    geom2 = String.format("ST_GeomFromText(%s,%s)", args[1],SRID_default);
+                }
+                return String.format("ST_AsText(ST_Union(%s , %s ) )", geom1, geom2);
+            }
         }
-        throw new UnsupportedOperationException("union function not supported by dialect "+dialect);
+        throw new UnsupportedOperationException("union function not supported by dialect " + dialect);
     }
 
     /**
-     * Get the return type of the function. This is needed for SQL type casting inside KiWi.
+     * Get the return type of the function. This is needed for SQL type casting
+     * inside KiWi.
      *
      * @return
      */
@@ -102,8 +112,8 @@ public class UnionFunction implements NativeFunction {
     }
 
     /**
-     * Get the argument type of the function for the arg'th argument (starting to count at 0).
-     * This is needed for SQL type casting inside KiWi.
+     * Get the argument type of the function for the arg'th argument (starting
+     * to count at 0). This is needed for SQL type casting inside KiWi.
      *
      * @param arg
      * @return

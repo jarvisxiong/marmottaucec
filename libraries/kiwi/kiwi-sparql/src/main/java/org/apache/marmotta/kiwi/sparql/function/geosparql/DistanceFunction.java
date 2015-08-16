@@ -16,7 +16,6 @@
  */
 package org.apache.marmotta.kiwi.sparql.function.geosparql;
 
-
 import org.apache.marmotta.kiwi.persistence.KiWiDialect;
 import org.apache.marmotta.kiwi.persistence.pgsql.PostgreSQLDialect;
 import org.apache.marmotta.kiwi.sparql.builder.ValueType;
@@ -28,24 +27,26 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * Returns the shortest distance in units between any two Points of two geometries. Should be implemented directly in
- * the database, as the in-memory implementation is non-functional. Only support by postgres - POSTGIS
+ * Returns the shortest distance in units between any two Points of two
+ * geometries. Should be implemented directly in the database, as the in-memory
+ * implementation is non-functional. Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- *     <li>geof:distance(?geometryA, ?geometryB, units:meter) </li>
+ * <li>geof:distance(?geometryA, ?geometryB, units:meter) </li>
  * </ul>
- * Its necesary enable postgis in your database with the next command "CREATE EXTENSION postgis;"
- * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
- * consult your database documentation on how to do this.
+ * Its necesary enable postgis in your database with the next command "CREATE
+ * EXTENSION postgis;" Note that for performance reasons it might be preferrable
+ * to create a geometry index for your database. Please consult your database
+ * documentation on how to do this.
  *
  * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
 public class DistanceFunction implements NativeFunction {
+// auto-register for SPARQL environment
 
-    // auto-register for SPARQL environment
     static {
-        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.DISTANCE.toString())) {
+        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.DISTANCE.toString())) {
             FunctionRegistry.getInstance().add(new DistanceFunction());
         }
     }
@@ -60,9 +61,9 @@ public class DistanceFunction implements NativeFunction {
         return FN_GEOSPARQL.DISTANCE.toString();
     }
 
-
     /**
-     * Return true if this function has available native support for the given dialect
+     * Return true if this function has available native support for the given
+     * dialect
      *
      * @param dialect
      * @return
@@ -73,7 +74,8 @@ public class DistanceFunction implements NativeFunction {
     }
 
     /**
-     * Return a string representing how this GeoSPARQL function is translated into SQL ( Postgis Function ) in the given dialect
+     * Return a string representing how this GeoSPARQL function is translated
+     * into SQL ( Postgis Function ) in the given dialect
      *
      * @param dialect
      * @param args
@@ -81,20 +83,28 @@ public class DistanceFunction implements NativeFunction {
      */
     @Override
     public String getNative(KiWiDialect dialect, String... args) {
-        if(dialect instanceof PostgreSQLDialect) {
-            if(args.length == 3) {
-             if (args[2].equalsIgnoreCase("'"+FN_GEOSPARQL.meter.toString()+"'")) {
-                 return "ST_Distance( ST_Transform( " + args[0]+  " ,26986), ST_Transform( " + args[1]+  " ,26986))";
-                 
-             }
-            } 
-
+        if (dialect instanceof PostgreSQLDialect) {
+            if (args.length == 3) {
+                String geom1 = args[0];
+                String geom2 = args[1];
+                String SRID_default = "4326";
+                if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
+                    geom1 = String.format("ST_GeomFromText(%s,%s)", args[0],SRID_default);
+                }
+                if (args[1].contains("POINT") || args[1].contains("MULTIPOINT") || args[1].contains("LINESTRING") || args[1].contains("MULTILINESTRING") || args[1].contains("POLYGON") || args[1].contains("MULTIPOLYGON")) {
+                    geom2 = String.format("ST_GeomFromText(%s,%s)", args[1],SRID_default);
+                }
+                if (args[2].equalsIgnoreCase("'" + FN_GEOSPARQL.meter.toString() + "'") || args[2].equalsIgnoreCase("'" + FN_GEOSPARQL.metre.toString() + "'")) {
+                    return String.format("ST_Distance( ST_Transform( %s ,26986), ST_Transform( %s ,26986))", geom1, geom2);
+                }
+            }
         }
-        throw new UnsupportedOperationException("distance function not supported by dialect "+dialect);
+        throw new UnsupportedOperationException("Distance function not supported by dialect " + dialect);
     }
 
     /**
-     * Get the return type of the function. This is needed for SQL type casting inside KiWi.
+     * Get the return type of the function. This is needed for SQL type casting
+     * inside KiWi.
      *
      * @return
      */
@@ -104,8 +114,8 @@ public class DistanceFunction implements NativeFunction {
     }
 
     /**
-     * Get the argument type of the function for the arg'th argument (starting to count at 0).
-     * This is needed for SQL type casting inside KiWi.
+     * Get the argument type of the function for the arg'th argument (starting
+     * to count at 0). This is needed for SQL type casting inside KiWi.
      *
      * @param arg
      * @return
@@ -122,7 +132,7 @@ public class DistanceFunction implements NativeFunction {
      */
     @Override
     public int getMinArgs() {
-        return 2;
+        return 3;
     }
 
     /**

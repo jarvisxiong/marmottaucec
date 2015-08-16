@@ -16,7 +16,6 @@
  */
 package org.apache.marmotta.kiwi.sparql.function.geosparql;
 
-
 import org.apache.marmotta.kiwi.persistence.KiWiDialect;
 import org.apache.marmotta.kiwi.persistence.pgsql.PostgreSQLDialect;
 import org.apache.marmotta.kiwi.sparql.builder.ValueType;
@@ -28,16 +27,18 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * A SPARQL function for doing a crosses between  two geometries. Should be implemented directly in
- * the database, as the in-memory implementation is non-functional. Only support by postgres - POSTGIS
+ * A SPARQL function for doing a crosses between two geometries. Should be
+ * implemented directly in the database, as the in-memory implementation is
+ * non-functional. Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- *     <li>geof:sfCrosses(?geometryA, ?geometryB) </li>
+ *      <li>geof:sfCrosses(?geometryA, ?geometryB) </li>
  * </ul>
- * Its necesary enable postgis in your database with the next command "CREATE EXTENSION postgis;"
- * Note that for performance reasons it might be preferrable to create a geometry index for your database. Please
- * consult your database documentation on how to do this.
+ * Its necesary enable postgis in your database with the next command "CREATE
+ * EXTENSION postgis;" Note that for performance reasons it might be preferrable
+ * to create a geometry index for your database. Please consult your database
+ * documentation on how to do this.
  *
  * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
@@ -45,7 +46,7 @@ public class SfCrossesFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
-        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.SF_CROSSES.toString())) {
+        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.SF_CROSSES.toString())) {
             FunctionRegistry.getInstance().add(new SfCrossesFunction());
         }
     }
@@ -60,9 +61,9 @@ public class SfCrossesFunction implements NativeFunction {
         return FN_GEOSPARQL.SF_CROSSES.toString();
     }
 
-
     /**
-     * Return true if this function has available native support for the given dialect
+     * Return true if this function has available native support for the given
+     * dialect
      *
      * @param dialect
      * @return
@@ -73,7 +74,8 @@ public class SfCrossesFunction implements NativeFunction {
     }
 
     /**
-     * Return a string representing how this GeoSPARQL function is translated into SQL ( Postgis Function ) in the given dialect
+     * Return a string representing how this GeoSPARQL function is translated
+     * into SQL ( Postgis Function ) in the given dialect
      *
      * @param dialect
      * @param args
@@ -81,21 +83,26 @@ public class SfCrossesFunction implements NativeFunction {
      */
     @Override
     public String getNative(KiWiDialect dialect, String... args) {
-        if(dialect instanceof PostgreSQLDialect) {
-            if(args.length == 2) {
-                if (args[1].contains(FN_GEOSPARQL.MULTIPOLYGON)|| args[1].contains(FN_GEOSPARQL.MULTILINESTRING) || args[1].contains(FN_GEOSPARQL.POINT))
-                {  //If users insert Direct the WKT  Geometry 
-                    return "st_Crosses(" + args[0] + " , " + args[1] + " )";    
-                }        
-                return "st_Crosses(" + args[0] + " , " + args[1] + " )";
-            } 
-
+        if (dialect instanceof PostgreSQLDialect) {
+            if (args.length == 2) {
+                String geom1 = args[0];
+                String geom2 = args[1];
+                String SRID_default = "4326";
+                if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
+                    geom1 = String.format("ST_GeomFromText(%s,%s)", args[0],SRID_default);
+                }
+                if (args[1].contains("POINT") || args[1].contains("MULTIPOINT") || args[1].contains("LINESTRING") || args[1].contains("MULTILINESTRING") || args[1].contains("POLYGON") || args[1].contains("MULTIPOLYGON")) {
+                    geom2 = String.format("ST_GeomFromText(%s,%s)", args[1],SRID_default);
+                }
+                return String.format("st_Crosses(%s , %s )", geom1, geom2);
+            }
         }
-        throw new UnsupportedOperationException("sfCrosses function not supported by dialect "+dialect);
+        throw new UnsupportedOperationException("Crosses function not supported by dialect " + dialect);
     }
 
     /**
-     * Get the return type of the function. This is needed for SQL type casting inside KiWi.
+     * Get the return type of the function. This is needed for SQL type casting
+     * inside KiWi.
      *
      * @return
      */
@@ -105,8 +112,8 @@ public class SfCrossesFunction implements NativeFunction {
     }
 
     /**
-     * Get the argument type of the function for the arg'th argument (starting to count at 0).
-     * This is needed for SQL type casting inside KiWi.
+     * Get the argument type of the function for the arg'th argument (starting
+     * to count at 0). This is needed for SQL type casting inside KiWi.
      *
      * @param arg
      * @return
@@ -133,6 +140,6 @@ public class SfCrossesFunction implements NativeFunction {
      */
     @Override
     public int getMaxArgs() {
-        return 3;
+        return 2;
     }
 }

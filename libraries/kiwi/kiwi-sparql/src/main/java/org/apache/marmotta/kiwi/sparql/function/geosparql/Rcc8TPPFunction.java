@@ -16,7 +16,6 @@
  */
 package org.apache.marmotta.kiwi.sparql.function.geosparql;
 
-
 import org.apache.marmotta.kiwi.persistence.KiWiDialect;
 import org.apache.marmotta.kiwi.persistence.pgsql.PostgreSQLDialect;
 import org.apache.marmotta.kiwi.sparql.builder.ValueType;
@@ -28,23 +27,26 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 /**
- * A SPARQL function for analyze the Tangential Proper Part between geometries. Should be implemented directly in
- * the database, as the in-memory implementation is non-functional. Only support by postgres - POSTGIS
+ * A SPARQL function for analyze the Tangential Proper Part between geometries.
+ * Should be implemented directly in the database, as the in-memory
+ * implementation is non-functional. Only support by postgres - POSTGIS
  * <p/>
  * The function can be called either as:
  * <ul>
- *     <li>geof:rcc8tpp(?geometryA, ?geometryB) </li>
+ *      <li>geof:rcc8tpp(?geometryA, ?geometryB) </li>
  * </ul>
- * Tangential Proper Part is calculated with "DE-9IM Intersection Pattern": defined in  "RCC8 Query Functions Table 7" from "DE-9IM Intersection Pattern" 
- * from OGC  GEOSPARQL DOCUMENT ( https://portal.opengeospatial.org/files/?artifact_id=47664 )
- *   
+ * Tangential Proper Part is calculated with "DE-9IM Intersection Pattern":
+ * defined in "RCC8 Query Functions Table 7" from "DE-9IM Intersection Pattern"
+ * from OGC GEOSPARQL DOCUMENT (
+ * https://portal.opengeospatial.org/files/?artifact_id=47664 )
+ *
  * @author Xavier Sumba (xavier.sumba93@ucuenca.ec))
  */
 public class Rcc8TPPFunction implements NativeFunction {
 
     // auto-register for SPARQL environment
     static {
-        if(!FunctionRegistry.getInstance().has(FN_GEOSPARQL.RCC8_TPP.toString())) {
+        if (!FunctionRegistry.getInstance().has(FN_GEOSPARQL.RCC8_TPP.toString())) {
             FunctionRegistry.getInstance().add(new Rcc8TPPFunction());
         }
     }
@@ -59,9 +61,9 @@ public class Rcc8TPPFunction implements NativeFunction {
         return FN_GEOSPARQL.RCC8_TPP.toString();
     }
 
-
     /**
-     * Return true if this function has available native support for the given dialect
+     * Return true if this function has available native support for the given
+     * dialect
      *
      * @param dialect
      * @return
@@ -72,21 +74,33 @@ public class Rcc8TPPFunction implements NativeFunction {
     }
 
     /**
-     * Return a string representing how this GeoSPARQL function is translated into SQL ( Postgis Function ) in the given dialect
+     * Return a string representing how this GeoSPARQL function is translated
+     * into SQL ( Postgis Function ) in the given dialect
+     *
      * @param dialect
      * @param args
      * @return
      */
     @Override
     public String getNative(KiWiDialect dialect, String... args) {
-        if(dialect instanceof PostgreSQLDialect) {
-            return String.format("ST_Relate(%s, %s, 'TFFTTFTTT')", args[0], args[1]);
+        if (dialect instanceof PostgreSQLDialect) {
+                String geom1 = args[0];
+                String geom2 = args[1];
+                String SRID_default = "4326";
+                if (args[0].contains("POINT") || args[0].contains("MULTIPOINT") || args[0].contains("LINESTRING") || args[0].contains("MULTILINESTRING") || args[0].contains("POLYGON") || args[0].contains("MULTIPOLYGON")) {
+                    geom1 = String.format("ST_GeomFromText(%s,%s)", args[0],SRID_default);
+                }
+                if (args[1].contains("POINT") || args[1].contains("MULTIPOINT") || args[1].contains("LINESTRING") || args[1].contains("MULTILINESTRING") || args[1].contains("POLYGON") || args[1].contains("MULTIPOLYGON")) {
+                    geom2 = String.format("ST_GeomFromText(%s,%s)", args[1],SRID_default);
+                }
+            return String.format("ST_Relate(%s, %s, 'TFFTTFTTT')", geom1, geom2);
         }
-        throw new UnsupportedOperationException("rcc8tpp function not supported by dialect "+dialect);
+        throw new UnsupportedOperationException("rcc8tpp function not supported by dialect " + dialect);
     }
 
     /**
-     * Get the return type of the function. This is needed for SQL type casting inside KiWi.
+     * Get the return type of the function. This is needed for SQL type casting
+     * inside KiWi.
      *
      * @return
      */
@@ -96,8 +110,8 @@ public class Rcc8TPPFunction implements NativeFunction {
     }
 
     /**
-     * Get the argument type of the function for the arg'th argument (starting to count at 0).
-     * This is needed for SQL type casting inside KiWi.
+     * Get the argument type of the function for the arg'th argument (starting
+     * to count at 0). This is needed for SQL type casting inside KiWi.
      *
      * @param arg
      * @return

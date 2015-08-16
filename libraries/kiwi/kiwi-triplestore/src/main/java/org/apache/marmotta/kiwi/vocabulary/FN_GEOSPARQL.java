@@ -104,7 +104,9 @@ public class FN_GEOSPARQL {
     public static final String unitsPREFIX = "units";
     public static final URI meter;
     public static final URI metre;
-
+    public static final URI degree;
+    public static final URI radian;
+    
     // Default CRS
     public static final String sridNamespace = "http://www.opengis.net/def/crs/";
     public static final URI defaultSRID;
@@ -154,7 +156,10 @@ public class FN_GEOSPARQL {
 
         meter = f.createURI(unitsNAMESPACE, "meter");
         metre = f.createURI(unitsNAMESPACE, "metre");
-
+        degree = f.createURI(unitsNAMESPACE, "degree");
+        radian = f.createURI(unitsNAMESPACE, "radian");
+        
+        
         POINT = "POINT";
         MULTIPOLYGON = "MULTIPOLYGON";
         MULTILINESTRING = "MULTILINESTRING";
